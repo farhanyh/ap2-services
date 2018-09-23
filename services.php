@@ -427,26 +427,6 @@ if($_GET["pilihan"]=="yesterday"){
 			if(isset($_GET["search"])){
 
 				$search = $_GET['search'];
-				// $result = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-				// $result = [];
-				// $totResult =[];
-				// $beginDate = date('Y-m-d',strtotime($tanggal)); //defined date. ganti $_GET['tanggal']
-				// // $rangeDate = date("Y-m-d", strtotime("-1 day", strtotime($beginDate)));
-				// // var_dump($daysIteration);
-				// // die();
-				// // $cgk_terminal = ["CT3","T2F","CT1"];
-				// // $term_cgk = [];
-				// // echo $beginDate;
-
-
-				// for ($j=0; $j < 7 ; $j++) { 
-
-					// $nowDate = date("Y-m-d", strtotime("-".$j." day", strtotime($beginDate)));
-					// $beforeDate = date("Y-m-d", strtotime("-".$j." day", strtotime($rangeDate)));
-					// echo "string";
-					// var_dump($nowDate);
-					// var_dump($result);
-
 				$result = getAggrgateHour($connection,$tanggal,7,$search);
 					 
 					// array_push($totResult,));
@@ -467,9 +447,9 @@ if($_GET["pilihan"]=="yesterday"){
 			$tanggal = "2018-08-27";
 			if(isset($_GET["search"])){
 				$search = $_GET["search"];
-				var_dump($tanggal);
-				var_dump($search);
-				die();
+				// var_dump($tanggal);
+				// var_dump($search);
+				// die();
 				$result = getAggrgateHour($connection,$tanggal,7,$search);
 			}else{
 				$result = getAggrgateHour($connection,$tanggal,7);
@@ -499,28 +479,6 @@ if($_GET["pilihan"]=="yesterday"){
 		// die();
 		header('Content-Type: application/json');
 		$date = "2018-08-27";
-
-
-		// $result = [];
-		// $tanggal = [];
-
-		// $beginDate = date('Y-m-d',strtotime("2018-08-27")); //ganti now date
-		// // var_dump($beginDate);
-		// // die();
-		// for ($j=0; $j < 7 ; $j++) { 
-		// 	$nowDate = date("Y-m-d", strtotime("-".$j." day", strtotime($beginDate)));
-
-
-		// 	$query = mysqli_query($connection, "SELECT COUNT(*) as penumpang FROM complate_dummy_internal WHERE DATE_SUB(atmsatad, INTERVAL 30 MINUTE) LIKE '%".$nowDate."%'");
-
-		// 	$row = mysqli_fetch_array($query);
-
-		// 	// var_dump("SELECT COUNT(*) as penumpang FROM complate_dummy_internal WHERE DATE_SUB(atmsatad, INTERVAL 30 MINUTE) LIKE '%".$nowDate."%'");
-		// 	// die();
-		// 	array_push($result, $row['penumpang']);
-		// 	array_push($tanggal, $nowDate);
-
-		// }
 
 		$data = new \stdClass();
 		$output = array();
@@ -655,56 +613,65 @@ function getAggrgateHour($connection,$beginDate,$daysIteration,$search = "")
 							$dump_term = "'".$term_cgk[0]."'";
 
 							if(count($term_cgk)>1){
-								for ($j=1; $j < count($term_cgk) ; $j++) { 
-									$dump_term .=",'".$term_cgk[$j]."'";
+								for ($k=1; $k < count($term_cgk) ; $k++) { 
+									$dump_term .=",'".$term_cgk[$k]."'";
 								}
 							}
 
 							// var_dump($dump_airport);
 							// var_dump($dump_term);
 							// die();
-							$query = mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND terminal_id IN (".$dump_term.") ");
 
-							$query_before =  mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND terminal_id IN (".$dump_term.")");
+							$text_query = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND terminal_id IN (".$dump_term.") ";
+
+
+
+							$text_query_before = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND terminal_id IN (".$dump_term.")";
+
 
 						}else{ //bukan cgk
 							// var_dump("ini");
 							// die();
-							$query = mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND airport_code IN ('".$search_array[0]."') ");
+
+							$text_query = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND airport_code IN ('".$search_array[0]."') ";
 
 
-							$query_before =  mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND airport_code IN ('".$search_array[0]."')");
+							$text_query_before = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND airport_code IN ('".$search_array[0]."')";
 
 						}
 					}else{ //lebih dari 1 airport
 
 
 						$dump_airport = "'".$search_array[0]."'";
-						for ($j=1; $j < count($search_array) ; $j++) { 
-							$dump_airport .=",'".$search_array[$j]."'";
+						for ($k=1; $k < count($search_array) ; $k++) { 
+							$dump_airport .=",'".$search_array[$k]."'";
 						}
 
+						// var_dump($dump_airport);
+						// die();
 
 
+						// var_dump($term_cgk);
+						// die();
 
 						// $dump_term = "'".$term_cgk[0]."'";
 						
 						if(count($term_cgk)>0){
 							$dump_term = "'".$term_cgk[0]."'";
 							if(count($term_cgk)>1){
-								for ($j=1; $j < count($term_cgk) ; $j++) { 
-									$dump_term .=",'".$term_cgk[$j]."'";
+								for ($k=1; $k < count($term_cgk) ; $k++) { 
+									$dump_term .=",'".$term_cgk[$k]."'";
 								}
 
 							}
 
 
 
+							$text_query = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND (terminal_id IN (".$dump_term.") OR airport_code IN (".$dump_airport.")) ";
 
 
-							$query = mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND (terminal_id IN (".$dump_term.") OR airport_code IN (".$dump_airport.")) ");
+							$text_query_before = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND (terminal_id IN (".$dump_term.") OR airport_code IN (".$dump_airport."))";
 
-							$query_before =  mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND (terminal_id IN (".$dump_term.") OR airport_code IN (".$dump_airport."))");
 
 						}else{
 							// var_dump($dump_term);
@@ -713,13 +680,16 @@ function getAggrgateHour($connection,$beginDate,$daysIteration,$search = "")
 							// die();
 
 
+						// var_dump("woii");
 						// var_dump($dump_airport);
-						// var_dump($nowDate);
 						// die();
 
-							$query = mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND airport_code IN (".$dump_airport.") ");
 
-							$query_before =  mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND airport_code IN (".$dump_airport.")");
+							$text_query = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%' AND airport_code IN (".$dump_airport.") ";
+
+
+							$text_query_before = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%' AND airport_code IN (".$dump_airport.")";
+
 
 
 						}
@@ -731,47 +701,77 @@ function getAggrgateHour($connection,$beginDate,$daysIteration,$search = "")
 					}
 
 				}else{ //withour search
-					$query = mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%'");
 
-					$query_before =  mysqli_query($connection, "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%'");
+					$text_query = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date)as jam_print_date, print_date FROM complate_dummy_internal WHERE atmsatad LIKE '%".$nowDate."%'";
+
+					$text_query_before = "SELECT HOUR(DATE_SUB(atmsatad, INTERVAL 30 MINUTE)) as jam_atmsatad, atmsatad, DATE_SUB(atmsatad, INTERVAL 30 MINUTE) as before_boarding, HOUR(print_date) as jam_print_date, print_date FROM complate_dummy_internal WHERE print_date LIKE '%".$beforeDate."%' AND atmsatad LIKE '%".$nowDate."%'";
+
 
 
 				}
 
 
+				// var_dump(mysqli_num_rows($query));
 
-				while($row = mysqli_fetch_array($query)){
+				// var_dump($text_query);
+				// var_dump("\n");
+				// var_dump($text_query_before);
+				// var_dump("\n");
 
-					$awal_print = $row['jam_print_date'];
-					$berangkat = $row['jam_atmsatad'];
-					$selisih = $berangkat-$awal_print;
-					// var_dump($awal_print);
-					// var_dump($berangkat);
-					// var_dump($selisih);
+				// die();
+				$query = mysqli_query($connection, $text_query);
 
+				$query_before =  mysqli_query($connection, $text_query_before);
 
-					// die();
-					if($berangkat > $awal_print){
-						for ($i=0; $i <= $selisih ; $i++) { 
-							$result[$awal_print+$i] = $result[$awal_print+$i]+1;
-						}
-					}else{
-						for ($i=0; $i < $berangkat ; $i++) { 
-							$result[$i] = $result[$i]+1;
-						}
-					}
-				}
-
-
-				// var_dump($result);
+				// var_dump($query);
 				// die();
 
-				while($row = mysqli_fetch_array($query_before)){
-					$berangkat = $row['jam_atmsatad'];
-					for ($i=0; $i <= $berangkat ; $i++) { 
-							$result[$i] = $result[$i]+1;
+				if(mysqli_num_rows($query)>0){
+					// var_dump($query);
+					// die();
+					while($row = mysqli_fetch_array($query)){
+
+						$awal_print = $row['jam_print_date'];
+						$berangkat = $row['jam_atmsatad'];
+						$selisih = $berangkat-$awal_print;
+						// var_dump($awal_print);
+						// var_dump($berangkat);
+						// var_dump($selisih);
+
+
+						// die();
+						if($berangkat > $awal_print){
+							for ($i=0; $i <= $selisih ; $i++) { 
+								$result[$awal_print+$i] = $result[$awal_print+$i]+1;
+							}
+						}else{
+							for ($i=0; $i < $berangkat ; $i++) { 
+								$result[$i] = $result[$i]+1;
+							}
+						}
 					}
+
 				}
+
+
+				// var_dump($text_query_before);
+				// var_dump($text_query);
+				// die();
+
+				if(mysqli_num_rows($query_before)>0){
+
+					while($row = mysqli_fetch_array($query_before)){
+						$berangkat = $row['jam_atmsatad'];
+						// var_dump($berangkat);
+						// die();
+						for ($i=0; $i <= $berangkat ; $i++) { 
+								$result[$i] = $result[$i]+1;
+						}
+					}
+
+				}
+				// var_dump($result);
+				// die();
 			}
 
 	// var_dump($result);
